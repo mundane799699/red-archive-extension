@@ -1,3 +1,5 @@
+import { saveData } from "./db.js";
+
 const openDB = () => {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open("XHSData", 1);
@@ -19,18 +21,13 @@ const openDB = () => {
 
 // 保存数据到IndexedDB
 const saveToIndexedDB = async (notesData) => {
-  console.log("notesData = ", notesData);
   const { items } = notesData;
-  const db = await openDB();
-  const transaction = db.transaction(["searchResults"], "readwrite");
-  const store = transaction.objectStore("searchResults");
   for (const item of items) {
-    console.log("item = ", item);
     const { id, note_card, xsec_token, model_type } = item;
     if (model_type === "note") {
       const { display_title, type, user } = note_card;
       const { nickname, user_id } = user;
-      store.put({
+      await saveData({
         id,
         display_title: display_title || "",
         type,
@@ -41,12 +38,7 @@ const saveToIndexedDB = async (notesData) => {
       });
     }
   }
-  transaction.oncomplete = () => {
-    console.log("数据已保存到IndexedDB");
-  };
-  transaction.onerror = (event) => {
-    console.error("保存数据失败:", event.target.error);
-  };
+  console.log("数据已保存到IndexedDB");
 };
 
 // 监听来自content script的消息

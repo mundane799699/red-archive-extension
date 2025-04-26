@@ -6,7 +6,8 @@
   "permissions": ["storage", "downloads", "scripting"],
   "host_permissions": ["*://*.xiaohongshu.com/*", "https://cdn.sheetjs.com/*"],
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "background.js",
+    "type": "module"
   },
   "content_scripts": [
     {
@@ -18,7 +19,7 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["scripts/pageInjectScript.js"],
+      "resources": ["scripts/pageInjectScript.js", "db.js"],
       "matches": ["*://*.xiaohongshu.com/*"]
     }
   ],
