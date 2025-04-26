@@ -32,7 +32,7 @@ const saveToIndexedDB = async (notesData) => {
       const { nickname, user_id } = user;
       store.put({
         id,
-        display_title,
+        display_title: display_title || "",
         type,
         user_id,
         nickname,
