@@ -1,0 +1,38 @@
+{
+  "manifest_version": 3,
+  "name": "小红书数据采集器",
+  "version": "1.1.0",
+  "description": "拦截并保存小红书搜索数据",
+  "permissions": ["storage", "downloads", "scripting"],
+  "host_permissions": ["*://*.xiaohongshu.com/*", "https://cdn.sheetjs.com/*"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*.xiaohongshu.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["scripts/pageInjectScript.js"],
+      "matches": ["*://*.xiaohongshu.com/*"]
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "images/icon16.png",
+      "48": "images/icon48.png",
+      "128": "images/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "images/icon16.png",
+    "48": "images/icon48.png",
+    "128": "images/icon128.png"
+  }
+}

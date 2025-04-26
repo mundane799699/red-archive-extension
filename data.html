@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>小红书数据查看器</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        background-color: #f5f5f5;
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+      .buttons {
+        display: flex;
+        gap: 10px;
+      }
+      .button {
+        padding: 8px 16px;
+        background-color: #ff2442;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+      }
+      .button:hover {
+        background-color: #e61e3c;
+      }
+      h1 {
+        color: #ff2442;
+        margin: 0;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+      th,
+      td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+      }
+      th {
+        background-color: #ff2442;
+        color: white;
+      }
+      tr:hover {
+        background-color: #f5f5f5;
+      }
+      .link {
+        color: #ff2442;
+        text-decoration: none;
+      }
+      .link:hover {
+        text-decoration: underline;
+      }
+      #status {
+        text-align: center;
+        margin: 20px 0;
+        color: #666;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>小红书数据查看器</h1>
+        <div class="buttons">
+          <button id="exportData" class="button">导出CSV</button>
+          <button id="clearData" class="button">清除数据</button>
+        </div>
+      </div>
+      <div id="status">加载中...</div>
+      <table id="dataTable">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>标题</th>
+            <th>链接</th>
+            <th>类型</th>
+            <th>用户ID</th>
+            <th>昵称</th>
+            <th>时间戳</th>
+          </tr>
+        </thead>
+        <tbody id="dataBody"></tbody>
+      </table>
+    </div>
+    <script src="data.js"></script>
+  </body>
+</html>
