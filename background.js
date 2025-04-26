@@ -1,24 +1,5 @@
 import { saveData } from "./db.js";
 
-const openDB = () => {
-  return new Promise((resolve, reject) => {
-    const request = indexedDB.open("XHSData", 1);
-
-    request.onerror = () => reject(request.error);
-    request.onsuccess = () => resolve(request.result);
-
-    request.onupgradeneeded = (event) => {
-      const db = event.target.result;
-      if (!db.objectStoreNames.contains("searchResults")) {
-        const store = db.createObjectStore("searchResults", {
-          keyPath: "id",
-        });
-        store.createIndex("timestamp", "timestamp", { unique: false });
-      }
-    };
-  });
-};
-
 // 保存数据到IndexedDB
 const saveToIndexedDB = async (notesData) => {
   const { items } = notesData;

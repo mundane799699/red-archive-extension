@@ -48,6 +48,16 @@ const convertToCSV = (data) => {
     .join("\n");
 };
 
+// 将数据转换为TXT格式（仅链接）
+const convertToTXT = (data) => {
+  return data
+    .map((item) => {
+      const link = `https://www.xiaohongshu.com/explore/${item.id}?xsec_token=${item.xsec_token}&xsec_source=pc_search&source=web_explore_feed`;
+      return link;
+    })
+    .join("\n");
+};
+
 // 导出数据
 const exportData = async () => {
   try {
@@ -77,6 +87,41 @@ const exportData = async () => {
     });
 
     document.getElementById("status").textContent = "数据导出成功！";
+  } catch (error) {
+    document.getElementById("status").textContent =
+      "导出失败：" + error.message;
+  }
+};
+
+// 导出数据为TXT
+const exportTXT = async () => {
+  try {
+    const data = await getAllData();
+    if (data.length === 0) {
+      document.getElementById("status").textContent = "暂无数据可导出";
+      return;
+    }
+
+    // 转换为TXT格式
+    const txtContent = convertToTXT(data);
+
+    // 创建Blob对象
+    const blob = new Blob([txtContent], {
+      type: "text/plain;charset=utf-8;",
+    });
+
+    // 创建下载链接
+    const url = URL.createObjectURL(blob);
+    const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+
+    // 下载文件
+    chrome.downloads.download({
+      url: url,
+      filename: `xhs-links-${timestamp}.txt`,
+      saveAs: true,
+    });
+
+    document.getElementById("status").textContent = "链接导出成功！";
   } catch (error) {
     document.getElementById("status").textContent =
       "导出失败：" + error.message;
@@ -138,5 +183,6 @@ document.addEventListener("DOMContentLoaded", () => {
   initPage();
   document.getElementById("refreshData").addEventListener("click", refreshData);
   document.getElementById("exportData").addEventListener("click", exportData);
+  document.getElementById("exportTXT").addEventListener("click", exportTXT);
   document.getElementById("clearData").addEventListener("click", clearData);
 });
