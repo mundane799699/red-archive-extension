@@ -1,12 +1,22 @@
 import { saveData } from "./db.js";
 
+// 监听扩展安装事件
+chrome.runtime.onInstalled.addListener((details) => {
+  if (details.reason === "install") {
+    // 首次安装时打开about页面
+    chrome.tabs.create({ url: "about.html" });
+  }
+});
+
 // 保存数据到IndexedDB
 const saveToIndexedDB = async (notesData) => {
   const { items } = notesData;
   for (const item of items) {
     const { id, note_card, xsec_token, model_type } = item;
     if (model_type === "note") {
-      const { display_title, type, user } = note_card;
+      const { display_title, type, user, interact_info } = note_card;
+      const { collected_count, comment_count, liked_count, shared_count } =
+        interact_info;
       const { nickname, user_id } = user;
       await saveData({
         id,
@@ -15,6 +25,10 @@ const saveToIndexedDB = async (notesData) => {
         user_id,
         nickname,
         xsec_token,
+        collected_count,
+        comment_count,
+        liked_count,
+        shared_count,
         timestamp: Date.now(),
       });
     }

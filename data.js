@@ -7,15 +7,18 @@ const renderData = (data) => {
 
   data.forEach((item) => {
     const row = document.createElement("tr");
-    const link = `https://www.xiaohongshu.com/explore/${item.id}?xsec_token=${item.xsec_token}&xsec_source=pc_search&source=web_explore_feed`;
-
+    const noteLink = `https://www.xiaohongshu.com/explore/${item.id}?xsec_token=${item.xsec_token}&xsec_source=pc_search&source=web_explore_feed`;
+    const authorLink = `https://www.xiaohongshu.com/user/profile/${item.user_id}`;
     row.innerHTML = `
-      <td>${item.id}</td>
       <td>${item.display_title || ""}</td>
-      <td><a href="${link}" target="_blank" class="link">查看</a></td>
+      <td><a href="${noteLink}" target="_blank" class="link">查看</a></td>
       <td>${item.type}</td>
-      <td>${item.user_id}</td>
+      <td><a href="${authorLink}" target="_blank" class="link">查看</a></td>
       <td>${item.nickname}</td>
+      <td>${item.liked_count || 0}</td>
+      <td>${item.comment_count || 0}</td>
+      <td>${item.shared_count || 0}</td>
+      <td>${item.collected_count || 0}</td>
       <td>${new Date(item.timestamp).toLocaleString()}</td>
     `;
 
@@ -26,18 +29,33 @@ const renderData = (data) => {
 // 将数据转换为CSV格式
 const convertToCSV = (data) => {
   // CSV表头
-  const headers = ["ID", "标题", "链接", "类型", "用户ID", "昵称", "时间戳"];
+  const headers = [
+    "标题",
+    "链接",
+    "类型",
+    "作者",
+    "昵称",
+    "点赞数",
+    "评论数",
+    "分享数",
+    "收藏数",
+    "时间戳",
+  ];
 
   // 转换数据行
   const rows = data.map((item) => {
-    const link = `https://www.xiaohongshu.com/explore/${item.id}?xsec_token=${item.xsec_token}&xsec_source=pc_search&source=web_explore_feed`;
+    const noteLink = `https://www.xiaohongshu.com/explore/${item.id}?xsec_token=${item.xsec_token}&xsec_source=pc_search&source=web_explore_feed`;
+    const authorLink = `https://www.xiaohongshu.com/user/profile/${item.user_id}`;
     return [
-      item.id,
       item.display_title || "",
-      link,
+      noteLink,
       item.type,
-      item.user_id,
+      authorLink,
       item.nickname,
+      item.liked_count || 0,
+      item.comment_count || 0,
+      item.shared_count || 0,
+      item.collected_count || 0,
       new Date(item.timestamp).toLocaleString(),
     ];
   });
@@ -56,6 +74,18 @@ const convertToTXT = (data) => {
       return link;
     })
     .join("\n");
+};
+
+// 格式化导出文件名的时间戳
+const formatExportTimestamp = () => {
+  const date = new Date();
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  const seconds = String(date.getSeconds()).padStart(2, "0");
+  return `${year}${month}${day}-${hours}${minutes}${seconds}`;
 };
 
 // 导出数据
@@ -77,12 +107,12 @@ const exportData = async () => {
 
     // 创建下载链接
     const url = URL.createObjectURL(blob);
-    const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+    const timestamp = formatExportTimestamp();
 
     // 下载文件
     chrome.downloads.download({
       url: url,
-      filename: `xhs-data-${timestamp}.csv`,
+      filename: `xhs-search-${timestamp}.csv`,
       saveAs: true,
     });
 
@@ -112,7 +142,7 @@ const exportTXT = async () => {
 
     // 创建下载链接
     const url = URL.createObjectURL(blob);
-    const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+    const timestamp = formatExportTimestamp();
 
     // 下载文件
     chrome.downloads.download({

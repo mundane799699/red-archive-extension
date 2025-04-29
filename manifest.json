@@ -1,10 +1,10 @@
 {
   "manifest_version": 3,
-  "name": "小红书数据采集器",
-  "version": "1.1.0",
+  "name": "RedArchive - 小红书数据采集器",
+  "version": "1.0.0",
   "description": "拦截并保存小红书搜索数据",
-  "permissions": ["storage", "downloads", "scripting"],
-  "host_permissions": ["*://*.xiaohongshu.com/*", "https://cdn.sheetjs.com/*"],
+  "permissions": ["storage", "downloads"],
+  "host_permissions": ["*://*.xiaohongshu.com/*"],
   "background": {
     "service_worker": "background.js",
     "type": "module"
