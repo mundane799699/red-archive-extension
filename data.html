@@ -63,6 +63,31 @@
       th {
         background-color: #ff2442;
         color: white;
+        position: relative;
+      }
+      th[data-column] {
+        cursor: pointer;
+      }
+      th[data-column]::after {
+        content: "";
+        position: absolute;
+        right: 8px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 12px;
+        height: 12px;
+        background-repeat: no-repeat;
+        background-position: center;
+      }
+      th[data-column]:not(.sorted-asc):not(.sorted-desc)::after {
+        content: "";
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 15l5 5 5-5'/%3E%3Cpath d='M7 9l5-5 5 5'/%3E%3C/svg%3E");
+      }
+      th.sorted-asc::after {
+        content: "↑";
+      }
+      th.sorted-desc::after {
+        content: "↓";
       }
       tr:hover {
         background-color: #f5f5f5;
