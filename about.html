@@ -49,11 +49,28 @@
         padding: 10px;
         margin: 10px 0;
       }
+      .version-info {
+        color: #666;
+        font-size: 14px;
+        white-space: nowrap;
+      }
     </style>
   </head>
   <body>
     <div class="container">
-      <h1>小红书数据采集器使用说明</h1>
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 20px;
+        "
+      >
+        <h1 style="margin: 0">小红书数据采集器使用说明</h1>
+        <div class="version-info">
+          当前版本：<span id="version">加载中...</span>
+        </div>
+      </div>
 
       <h2>功能介绍</h2>
       <p>
@@ -135,5 +152,6 @@
         </a>
       </div>
     </div>
+    <script src="about.js"></script>
   </body>
 </html>
