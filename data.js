@@ -1,11 +1,19 @@
-import { getAllData, clearAllData } from "./db.js";
+import {
+  getAllData,
+  clearAllData,
+  getAllHomepageData,
+  clearAllHomepageData,
+} from "./db.js";
 
 // 添加排序状态变量
 let originalData = [];
+let originalHomepageData = [];
 let currentSortColumn = null;
 let currentSortOrder = 0; // 0: 无排序, 1: 升序, 2: 降序
+let currentHomepageSortColumn = null;
+let currentHomepageSortOrder = 0; // 0: 无排序, 1: 升序, 2: 降序
 
-// 渲染数据到表格
+// 渲染搜索数据到表格
 const renderData = (data) => {
   const tbody = document.getElementById("dataBody");
   tbody.innerHTML = "";
@@ -31,7 +39,30 @@ const renderData = (data) => {
   });
 };
 
-// 添加排序函数
+// 渲染主页数据到表格
+const renderHomepageData = (data) => {
+  const tbody = document.getElementById("homepageBody");
+  tbody.innerHTML = "";
+
+  data.forEach((item) => {
+    const row = document.createElement("tr");
+    const noteLink = `https://www.xiaohongshu.com/explore/${item.id}?xsec_token=${item.xsec_token}&xsec_source=pc_search&source=web_explore_feed`;
+    const authorLink = `https://www.xiaohongshu.com/user/profile/${item.user_id}`;
+    row.innerHTML = `
+      <td>${item.display_title || ""}</td>
+      <td><a href="${noteLink}" target="_blank" class="link">查看</a></td>
+      <td>${item.type}</td>
+      <td><a href="${authorLink}" target="_blank" class="link">查看</a></td>
+      <td>${item.nickname}</td>
+      <td>${item.liked_count || 0}</td>
+      <td>${new Date(item.timestamp).toLocaleString()}</td>
+    `;
+
+    tbody.appendChild(row);
+  });
+};
+
+// 添加排序函数 - 搜索数据
 const sortData = (column) => {
   if (currentSortColumn === column) {
     currentSortOrder = (currentSortOrder + 1) % 3;
@@ -62,35 +93,69 @@ const sortData = (column) => {
   }
 
   renderData(sortedData);
-  updateSortIndicators();
+  updateSortIndicators("dataTable");
+};
+
+// 添加排序函数 - 主页数据
+const sortHomepageData = (column) => {
+  if (currentHomepageSortColumn === column) {
+    currentHomepageSortOrder = (currentHomepageSortOrder + 1) % 3;
+  } else {
+    currentHomepageSortColumn = column;
+    currentHomepageSortOrder = 1;
+  }
+
+  let sortedData;
+  if (currentHomepageSortOrder === 0) {
+    // 恢复原始顺序
+    sortedData = [...originalHomepageData];
+  } else {
+    sortedData = [...originalHomepageData].sort((a, b) => {
+      let aValue, bValue;
+
+      // 根据不同列类型获取对应的值
+      if (column === "timestamp") {
+        aValue = new Date(a[column]).getTime();
+        bValue = new Date(b[column]).getTime();
+      } else {
+        aValue = a[column] || 0;
+        bValue = b[column] || 0;
+      }
+
+      return currentHomepageSortOrder === 1 ? aValue - bValue : bValue - aValue;
+    });
+  }
+
+  renderHomepageData(sortedData);
+  updateSortIndicators("homepageTable");
 };
 
 // 更新表格排序状态的视觉指示器
-const updateSortIndicators = () => {
+const updateSortIndicators = (tableId) => {
   // 获取所有表头元素
-  const headers = document.querySelectorAll("th");
+  const headers = document.querySelectorAll(`#${tableId} th`);
+  const isHomepage = tableId === "homepageTable";
+  const currentColumn = isHomepage
+    ? currentHomepageSortColumn
+    : currentSortColumn;
+  const currentOrder = isHomepage ? currentHomepageSortOrder : currentSortOrder;
 
   // 首先移除所有表头的排序状态类名
-  // 这样可以清除之前的排序状态显示
   headers.forEach((header) => {
     header.classList.remove("sorted-asc", "sorted-desc");
   });
 
   // 只有当存在排序列且排序状态不为0（即不是默认状态）时才添加排序指示器
-  if (currentSortColumn && currentSortOrder !== 0) {
+  if (currentColumn && currentOrder !== 0) {
     // 查找当前正在排序的列的表头元素
     const header = document.querySelector(
-      `th[data-column="${currentSortColumn}"]`
+      `#${tableId} th[data-column="${currentColumn}"]`
     );
 
     // 如果找到了对应的表头元素
     if (header) {
       // 根据排序顺序添加对应的类名
-      // currentSortOrder为1时添加sorted-asc（升序）
-      // currentSortOrder为2时添加sorted-desc（降序）
-      header.classList.add(
-        currentSortOrder === 1 ? "sorted-asc" : "sorted-desc"
-      );
+      header.classList.add(currentOrder === 1 ? "sorted-asc" : "sorted-desc");
     }
   }
 };
@@ -157,7 +222,7 @@ const formatExportTimestamp = () => {
   return `${year}${month}${day}-${hours}${minutes}${seconds}`;
 };
 
-// 获取当前显示的数据
+// 获取当前显示的搜索数据
 const getCurrentDisplayData = () => {
   if (currentSortColumn && currentSortOrder !== 0) {
     // 如果有排序，返回排序后的数据
@@ -180,7 +245,56 @@ const getCurrentDisplayData = () => {
   return originalData;
 };
 
-// 导出数据
+// 获取当前显示的主页数据
+const getCurrentHomepageDisplayData = () => {
+  if (currentHomepageSortColumn && currentHomepageSortOrder !== 0) {
+    // 如果有排序，返回排序后的数据
+    return [...originalHomepageData].sort((a, b) => {
+      let aValue, bValue;
+
+      // 根据不同列类型获取对应的值
+      if (currentHomepageSortColumn === "timestamp") {
+        aValue = new Date(a[currentHomepageSortColumn]).getTime();
+        bValue = new Date(b[currentHomepageSortColumn]).getTime();
+      } else {
+        aValue = a[currentHomepageSortColumn] || 0;
+        bValue = b[currentHomepageSortColumn] || 0;
+      }
+
+      return currentHomepageSortOrder === 1 ? aValue - bValue : bValue - aValue;
+    });
+  }
+  // 如果没有排序，返回原始数据
+  return originalHomepageData;
+};
+
+// 将主页数据转换为CSV格式
+const convertHomepageToCSV = (data) => {
+  // CSV表头，移除评论数、分享数和收藏数
+  const headers = ["标题", "链接", "类型", "作者", "昵称", "点赞数", "时间戳"];
+
+  // 转换数据行
+  const rows = data.map((item) => {
+    const noteLink = `https://www.xiaohongshu.com/explore/${item.id}?xsec_token=${item.xsec_token}&xsec_source=pc_search&source=web_explore_feed`;
+    const authorLink = `https://www.xiaohongshu.com/user/profile/${item.user_id}`;
+    return [
+      item.display_title || "",
+      noteLink,
+      item.type,
+      authorLink,
+      item.nickname,
+      item.liked_count || 0,
+      new Date(item.timestamp).toLocaleString(),
+    ];
+  });
+
+  // 组合表头和数据行
+  return [headers, ...rows]
+    .map((row) => row.map((cell) => `"${cell}"`).join(","))
+    .join("\n");
+};
+
+// 导出搜索数据
 const exportData = async () => {
   try {
     // 使用当前显示的数据顺序
@@ -216,7 +330,43 @@ const exportData = async () => {
   }
 };
 
-// 导出数据为TXT
+// 导出主页数据
+const exportHomepageData = async () => {
+  try {
+    // 使用当前显示的数据顺序
+    const data = getCurrentHomepageDisplayData();
+    if (data.length === 0) {
+      document.getElementById("homepageStatus").textContent = "暂无数据可导出";
+      return;
+    }
+
+    // 转换为CSV格式
+    const csvContent = convertHomepageToCSV(data);
+
+    // 创建Blob对象
+    const blob = new Blob(["\ufeff" + csvContent], {
+      type: "text/csv;charset=utf-8;",
+    });
+
+    // 创建下载链接
+    const url = URL.createObjectURL(blob);
+    const timestamp = formatExportTimestamp();
+
+    // 下载文件
+    chrome.downloads.download({
+      url: url,
+      filename: `xhs-homepage-${timestamp}.csv`,
+      saveAs: true,
+    });
+
+    document.getElementById("homepageStatus").textContent = "数据导出成功！";
+  } catch (error) {
+    document.getElementById("homepageStatus").textContent =
+      "导出失败：" + error.message;
+  }
+};
+
+// 导出搜索数据为TXT
 const exportTXT = async () => {
   try {
     // 使用当前显示的数据顺序
@@ -252,14 +402,57 @@ const exportTXT = async () => {
   }
 };
 
-// 重置排序状态
+// 导出主页数据为TXT
+const exportHomepageTXT = async () => {
+  try {
+    // 使用当前显示的数据顺序
+    const data = getCurrentHomepageDisplayData();
+    if (data.length === 0) {
+      document.getElementById("homepageStatus").textContent = "暂无数据可导出";
+      return;
+    }
+
+    // 转换为TXT格式
+    const txtContent = convertToTXT(data);
+
+    // 创建Blob对象
+    const blob = new Blob([txtContent], {
+      type: "text/plain;charset=utf-8;",
+    });
+
+    // 创建下载链接
+    const url = URL.createObjectURL(blob);
+    const timestamp = formatExportTimestamp();
+
+    // 下载文件
+    chrome.downloads.download({
+      url: url,
+      filename: `xhs-homepage-links-${timestamp}.txt`,
+      saveAs: true,
+    });
+
+    document.getElementById("homepageStatus").textContent = "链接导出成功！";
+  } catch (error) {
+    document.getElementById("homepageStatus").textContent =
+      "导出失败：" + error.message;
+  }
+};
+
+// 重置搜索排序状态
 const resetSortState = () => {
   currentSortColumn = null;
   currentSortOrder = 0;
-  updateSortIndicators();
+  updateSortIndicators("dataTable");
 };
 
-// 刷新数据
+// 重置主页排序状态
+const resetHomepageSortState = () => {
+  currentHomepageSortColumn = null;
+  currentHomepageSortOrder = 0;
+  updateSortIndicators("homepageTable");
+};
+
+// 刷新搜索数据
 const refreshData = async () => {
   document.getElementById("status").textContent = "正在刷新...";
   try {
@@ -281,9 +474,33 @@ const refreshData = async () => {
   }
 };
 
-// 清除数据
+// 刷新主页数据
+const refreshHomepageData = async () => {
+  document.getElementById("homepageStatus").textContent = "正在刷新...";
+  try {
+    const data = await getAllHomepageData();
+    if (data.length === 0) {
+      document.getElementById("homepageStatus").textContent = "暂无数据";
+      document.getElementById("homepageBody").innerHTML = "";
+      return;
+    }
+    originalHomepageData = data;
+    // 重置排序状态
+    resetHomepageSortState();
+    // 使用原始数据顺序渲染
+    renderHomepageData(data);
+    document.getElementById(
+      "homepageStatus"
+    ).textContent = `共 ${data.length} 条数据`;
+  } catch (error) {
+    document.getElementById("homepageStatus").textContent =
+      "刷新失败：" + error.message;
+  }
+};
+
+// 清除搜索数据
 const clearData = async () => {
-  if (!confirm("确定要清除所有数据吗？此操作不可恢复！")) {
+  if (!confirm("确定要清除所有搜索数据吗？此操作不可恢复！")) {
     return;
   }
 
@@ -299,21 +516,77 @@ const clearData = async () => {
   }
 };
 
+// 清除主页数据
+const clearHomepageData = async () => {
+  if (!confirm("确定要清除所有主页数据吗？此操作不可恢复！")) {
+    return;
+  }
+
+  try {
+    await clearAllHomepageData();
+    // 重置排序状态
+    resetHomepageSortState();
+    document.getElementById("homepageStatus").textContent = "数据已清除！";
+    document.getElementById("homepageBody").innerHTML = "";
+  } catch (error) {
+    document.getElementById("homepageStatus").textContent =
+      "清除失败：" + error.message;
+  }
+};
+
+// 切换标签页
+const switchTab = (tabId) => {
+  // 移除所有标签页和内容区域的活动状态
+  document.querySelectorAll(".sidebar-menu li").forEach((item) => {
+    item.classList.remove("active");
+  });
+  document.querySelectorAll(".content-panel").forEach((item) => {
+    item.classList.remove("active");
+  });
+
+  // 为当前标签页和对应内容区域添加活动状态
+  document.getElementById(tabId).classList.add("active");
+  if (tabId === "search-tab") {
+    document.getElementById("search-panel").classList.add("active");
+  } else if (tabId === "homepage-tab") {
+    document.getElementById("homepage-panel").classList.add("active");
+  }
+};
+
 // 初始化页面
 const initPage = async () => {
   try {
+    // 加载搜索数据
     const data = await getAllData();
     if (data.length === 0) {
       document.getElementById("status").textContent = "暂无数据";
-      return;
+    } else {
+      originalData = data;
+      // 初始化时确保排序状态为重置状态
+      resetSortState();
+      renderData(data);
+      document.getElementById(
+        "status"
+      ).textContent = `共 ${data.length} 条数据`;
     }
-    originalData = data;
-    // 初始化时确保排序状态为重置状态
-    resetSortState();
-    renderData(data);
-    document.getElementById("status").textContent = `共 ${data.length} 条数据`;
+
+    // 加载主页数据
+    const homepageData = await getAllHomepageData();
+    if (homepageData.length === 0) {
+      document.getElementById("homepageStatus").textContent = "暂无数据";
+    } else {
+      originalHomepageData = homepageData;
+      // 初始化时确保排序状态为重置状态
+      resetHomepageSortState();
+      renderHomepageData(homepageData);
+      document.getElementById(
+        "homepageStatus"
+      ).textContent = `共 ${homepageData.length} 条数据`;
+    }
   } catch (error) {
     document.getElementById("status").textContent =
+      "加载失败：" + error.message;
+    document.getElementById("homepageStatus").textContent =
       "加载失败：" + error.message;
   }
 };
@@ -321,13 +594,37 @@ const initPage = async () => {
 // 页面加载完成后初始化
 document.addEventListener("DOMContentLoaded", () => {
   initPage();
+
+  // 搜索数据按钮事件
   document.getElementById("refreshData").addEventListener("click", refreshData);
   document.getElementById("exportData").addEventListener("click", exportData);
   document.getElementById("exportTXT").addEventListener("click", exportTXT);
   document.getElementById("clearData").addEventListener("click", clearData);
 
-  // 添加表头点击事件
-  const headers = document.querySelectorAll("th");
+  // 主页数据按钮事件
+  document
+    .getElementById("refreshHomepageData")
+    .addEventListener("click", refreshHomepageData);
+  document
+    .getElementById("exportHomepageData")
+    .addEventListener("click", exportHomepageData);
+  document
+    .getElementById("exportHomepageTXT")
+    .addEventListener("click", exportHomepageTXT);
+  document
+    .getElementById("clearHomepageData")
+    .addEventListener("click", clearHomepageData);
+
+  // 侧边栏切换事件
+  document
+    .getElementById("search-tab")
+    .addEventListener("click", () => switchTab("search-tab"));
+  document
+    .getElementById("homepage-tab")
+    .addEventListener("click", () => switchTab("homepage-tab"));
+
+  // 添加表头点击事件 - 搜索数据
+  const headers = document.querySelectorAll("#dataTable th");
   headers.forEach((header) => {
     const column = header.textContent.trim();
     // 定义可排序列的映射关系
@@ -344,6 +641,29 @@ document.addEventListener("DOMContentLoaded", () => {
       header.setAttribute("data-column", columnMapping[column]);
       header.style.cursor = "pointer";
       header.addEventListener("click", () => sortData(columnMapping[column]));
+    }
+  });
+
+  // 添加表头点击事件 - 主页数据
+  const homepageHeaders = document.querySelectorAll("#homepageTable th");
+  homepageHeaders.forEach((header) => {
+    const column = header.textContent.trim();
+    // 定义可排序列的映射关系
+    const columnMapping = {
+      点赞数: "liked_count",
+      评论数: "comment_count",
+      分享数: "shared_count",
+      收藏数: "collected_count",
+      时间戳: "timestamp",
+    };
+
+    // 如果是可排序的列，添加排序功能
+    if (columnMapping[column]) {
+      header.setAttribute("data-column", columnMapping[column]);
+      header.style.cursor = "pointer";
+      header.addEventListener("click", () =>
+        sortHomepageData(columnMapping[column])
+      );
     }
   });
 });

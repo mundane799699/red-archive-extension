@@ -6,9 +6,94 @@
     <style>
       body {
         font-family: Arial, sans-serif;
-        margin: 20px;
+        margin: 0;
+        padding: 0;
         background-color: #f5f5f5;
         line-height: 1.6;
+        min-height: 100vh;
+      }
+      .layout {
+        display: flex;
+        min-height: 100vh;
+        position: relative;
+      }
+      .sidebar {
+        width: 180px;
+        background-color: #f0f0f0;
+        color: #333;
+        padding: 0 0 0 0; /* 底部增加padding，为版本信息留出空间 */
+        position: fixed;
+        height: 100vh;
+        overflow-y: auto;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        box-sizing: border-box;
+      }
+      .sidebar-title {
+        text-align: center;
+        font-size: 18px;
+        color: #ff2442;
+        padding: 30px 15px;
+      }
+      .sidebar-menu {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 0 0;
+        flex: 1;
+      }
+      .sidebar-menu li {
+        padding: 15px 20px;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+      .sidebar-menu li:hover {
+        background-color: #e0e0e0;
+      }
+      .sidebar-menu li.active {
+        background-color: #ff2442;
+        font-weight: bold;
+        color: white;
+      }
+      .sidebar-footer {
+        border-top: 1px solid #ddd;
+        width: 100%;
+        box-sizing: border-box;
+        bottom: 0;
+        left: 0;
+        background-color: #f0f0f0;
+      }
+
+      .feedback-info,
+      .version-info {
+        text-align: center;
+        color: #666;
+        font-size: 12px;
+        padding: 10px;
+        white-space: nowrap;
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      .feedback-info {
+        position: relative;
+        padding-bottom: 15px;
+      }
+
+      .feedback-info a {
+        color: #ff2442;
+        text-decoration: none;
+        font-weight: bold;
+        font-size: 14px;
+      }
+
+      .feedback-info a:hover {
+        text-decoration: underline;
+      }
+      .content {
+        flex: 1;
+        margin-left: 180px;
+        padding: 20px;
       }
       .container {
         max-width: 800px;
@@ -17,14 +102,25 @@
         padding: 20px;
         border-radius: 8px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        font-size: 16px;
       }
+
+      .container p,
+      .container li {
+        font-size: 16px;
+        line-height: 1.6;
+      }
+
       h1 {
         color: #ff2442;
         margin-bottom: 20px;
+        font-size: 28px;
       }
+
       h2 {
         color: #333;
         margin-top: 30px;
+        font-size: 22px;
       }
       .step {
         margin-bottom: 20px;
@@ -49,107 +145,170 @@
         padding: 10px;
         margin: 10px 0;
       }
-      .version-info {
-        color: #666;
-        font-size: 14px;
-        white-space: nowrap;
+      .content-panel {
+        display: none;
+      }
+      .content-panel.active {
+        display: block;
       }
     </style>
   </head>
   <body>
-    <div class="container">
-      <div
-        style="
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 20px;
-        "
-      >
-        <h1 style="margin: 0">小红书数据采集器使用说明</h1>
-        <div class="version-info">
-          当前版本：<span id="version">加载中...</span>
+    <div class="layout">
+      <div class="sidebar">
+        <div class="sidebar-title">小红书数据采集器</div>
+        <ul class="sidebar-menu">
+          <li id="search-tab" class="active">搜索抓取</li>
+          <li id="homepage-tab">主页抓取</li>
+        </ul>
+        <div class="sidebar-footer">
+          <div class="feedback-info">
+            <a
+              href="https://c1p0xw7om7n.feishu.cn/share/base/form/shrcnU9H29idMPepLzW7bIUzEY0"
+              target="_blank"
+            >
+              提交建议反馈
+            </a>
+          </div>
+          <div class="version-info">
+            当前版本：<span id="version">加载中...</span>
+          </div>
         </div>
       </div>
+      <div class="content">
+        <div id="search-panel" class="content-panel active">
+          <div class="container">
+            <h1>搜索抓取使用说明</h1>
 
-      <h2>功能介绍</h2>
-      <p>
-        小红书数据采集器是一个浏览器扩展，可以帮助你采集小红书搜索结果页面的笔记数据。采集的数据包括：标题、链接、类型、作者信息、互动数据等。
-      </p>
+            <h2>功能介绍</h2>
+            <p>
+              搜索抓取功能可以帮助你采集小红书搜索结果页面的笔记数据。采集的数据包括：标题、链接、类型、作者信息、互动数据等。
+            </p>
 
-      <h2>使用步骤</h2>
+            <h2>使用步骤</h2>
 
-      <div class="step">
-        <span class="step-number">1</span>
-        <strong>安装扩展</strong>
-        <p>将扩展安装到你的Chrome浏览器中。</p>
-      </div>
+            <div class="step">
+              <span class="step-number">1</span>
+              <strong>安装扩展</strong>
+              <p>将扩展安装到你的Chrome浏览器中。</p>
+            </div>
 
-      <div class="step">
-        <span class="step-number">2</span>
-        <strong>访问小红书</strong>
-        <p>
-          打开<a
-            href="https://www.xiaohongshu.com"
-            target="_blank"
-            style="color: #ff2442; text-decoration: none"
-            >小红书网站</a
-          >，输入你要查询的关键词，点击搜索。
-        </p>
-      </div>
+            <div class="step">
+              <span class="step-number">2</span>
+              <strong>访问小红书</strong>
+              <p>
+                打开<a
+                  href="https://www.xiaohongshu.com"
+                  target="_blank"
+                  style="color: #ff2442; text-decoration: none"
+                  >小红书网站</a
+                >，输入你要查询的关键词，点击搜索。
+              </p>
+            </div>
 
-      <div class="step">
-        <span class="step-number">3</span>
-        <strong>开始采集</strong>
-        <p>
-          扩展会自动拦截搜索结果的笔记数据,
-          保存到扩展的本地数据库。向下滚动页面可以采集更多数据。
-        </p>
-      </div>
+            <div class="step">
+              <span class="step-number">3</span>
+              <strong>开始采集</strong>
+              <p>
+                扩展会自动拦截搜索结果的笔记数据,
+                保存到扩展的本地数据库。向下滚动页面可以采集更多数据。
+              </p>
+            </div>
 
-      <div class="step">
-        <span class="step-number">4</span>
-        <strong>查看数据</strong>
-        <p>
-          点击扩展图标，选择"查看数据"按钮，可以在新页面中查看已采集的数据。
-        </p>
-      </div>
+            <div class="step">
+              <span class="step-number">4</span>
+              <strong>查看数据</strong>
+              <p>
+                点击扩展图标，选择"查看数据"按钮，可以在新页面中查看已采集的数据。
+              </p>
+            </div>
 
-      <div class="step">
-        <span class="step-number">5</span>
-        <strong>导出数据</strong>
-        <p>在数据查看页面，你可以：</p>
-        <ul>
-          <li>导出为CSV文件（包含完整数据）</li>
-          <li>导出为TXT文件（仅包含链接）</li>
-          <li>清除已采集的数据</li>
-        </ul>
-      </div>
+            <div class="step">
+              <span class="step-number">5</span>
+              <strong>导出数据</strong>
+              <p>在数据查看页面，你可以：</p>
+              <ul>
+                <li>导出为CSV文件（包含完整数据）</li>
+                <li>导出为TXT文件（仅包含链接）</li>
+                <li>清除已采集的数据</li>
+              </ul>
+            </div>
 
-      <div class="note">
-        <strong>注意事项：</strong>
-        <ul>
-          <li>请合理使用，不要频繁采集数据</li>
-          <li>采集的数据仅用于个人学习研究</li>
-          <li>请遵守小红书的使用条款和相关法律法规</li>
-        </ul>
-      </div>
+            <div class="note">
+              <strong>注意事项：</strong>
+              <ul>
+                <li>请合理使用，不要频繁采集数据</li>
+                <li>采集的数据仅用于个人学习研究</li>
+                <li>请遵守小红书的使用条款和相关法律法规</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div id="homepage-panel" class="content-panel">
+          <div class="container">
+            <h1>主页抓取使用说明</h1>
 
-      <div
-        style="
-          text-align: center;
-          margin-top: 40px;
-          padding-top: 20px;
-          border-top: 1px solid #eee;
-        "
-      >
-        <a
-          href="https://c1p0xw7om7n.feishu.cn/share/base/form/shrcnU9H29idMPepLzW7bIUzEY0"
-          target="_blank"
-          style="color: #ff2442; text-decoration: none; font-size: 16px"
-        >
-          提交建议反馈
-        </a>
+            <h2>功能介绍</h2>
+            <p>
+              主页抓取功能可以帮助你采集小红书用户主页的笔记数据。它会自动获取用户发布的笔记内容，包括标题、链接、作者信息、点赞数等。
+            </p>
+
+            <h2>使用步骤</h2>
+
+            <div class="step">
+              <span class="step-number">1</span>
+              <strong>安装扩展</strong>
+              <p>将扩展安装到你的Chrome浏览器中。</p>
+            </div>
+
+            <div class="step">
+              <span class="step-number">2</span>
+              <strong>访问用户主页</strong>
+              <p>
+                打开小红书网站，访问你需要采集数据的用户主页。用户主页地址通常是
+                <code>https://www.xiaohongshu.com/user/profile/用户ID</code>
+                格式。
+              </p>
+            </div>
+
+            <div class="step">
+              <span class="step-number">3</span>
+              <strong>自动采集</strong>
+              <p>
+                一旦页面加载完成，扩展会自动从页面中提取第一页的笔记数据，并保存到扩展的本地数据库。下滑页面加载更多内容时，也会自动采集新加载的数据。
+              </p>
+            </div>
+
+            <div class="step">
+              <span class="step-number">4</span>
+              <strong>查看数据</strong>
+              <p>
+                点击扩展图标，选择"查看数据"按钮，在数据查看页面选择"主页抓取"标签，可以查看已采集的用户主页数据。
+              </p>
+            </div>
+
+            <div class="step">
+              <span class="step-number">5</span>
+              <strong>导出数据</strong>
+              <p>在主页数据查看页面，你可以：</p>
+              <ul>
+                <li>导出为CSV文件（包含完整数据）</li>
+                <li>导出为TXT文件（仅包含链接）</li>
+                <li>清除已采集的数据</li>
+              </ul>
+            </div>
+
+            <div class="note">
+              <strong>注意事项：</strong>
+              <ul>
+                <li>请合理使用，不要频繁采集数据</li>
+                <li>采集的数据仅用于个人学习研究</li>
+                <li>请尊重他人隐私，遵守相关法律法规</li>
+                <li>主页抓取功能目前仅获取笔记标题、类型和点赞数等有限信息</li>
+              </ul>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <script src="about.js"></script>

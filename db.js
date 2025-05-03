@@ -12,11 +12,17 @@ const initDB = () => {
         });
         store.createIndex("timestamp", "timestamp", { unique: false });
       }
+      if (!db.objectStoreNames.contains("homepageResults")) {
+        const store = db.createObjectStore("homepageResults", {
+          keyPath: "id",
+        });
+        store.createIndex("timestamp", "timestamp", { unique: false });
+      }
     };
   });
 };
 
-// 获取所有数据
+// 获取所有搜索数据
 export const getAllData = async () => {
   const db = await initDB();
   return new Promise((resolve, reject) => {
@@ -29,7 +35,20 @@ export const getAllData = async () => {
   });
 };
 
-// 清除所有数据
+// 获取所有主页数据
+export const getAllHomepageData = async () => {
+  const db = await initDB();
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(["homepageResults"], "readonly");
+    const store = transaction.objectStore("homepageResults");
+    const request = store.getAll();
+
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+};
+
+// 清除所有搜索数据
 export const clearAllData = async () => {
   const db = await initDB();
   return new Promise((resolve, reject) => {
@@ -42,12 +61,38 @@ export const clearAllData = async () => {
   });
 };
 
-// 保存数据
+// 清除所有主页数据
+export const clearAllHomepageData = async () => {
+  const db = await initDB();
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(["homepageResults"], "readwrite");
+    const store = transaction.objectStore("homepageResults");
+    const request = store.clear();
+
+    request.onsuccess = () => resolve();
+    request.onerror = () => reject(request.error);
+  });
+};
+
+// 保存搜索数据
 export const saveData = async (data) => {
   const db = await initDB();
   return new Promise((resolve, reject) => {
     const transaction = db.transaction(["searchResults"], "readwrite");
     const store = transaction.objectStore("searchResults");
+    const request = store.put(data);
+
+    request.onsuccess = () => resolve();
+    request.onerror = () => reject(request.error);
+  });
+};
+
+// 保存主页数据
+export const saveHomepageData = async (data) => {
+  const db = await initDB();
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(["homepageResults"], "readwrite");
+    const store = transaction.objectStore("homepageResults");
     const request = store.put(data);
 
     request.onsuccess = () => resolve();

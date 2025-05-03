@@ -6,8 +6,53 @@
     <style>
       body {
         font-family: Arial, sans-serif;
-        margin: 20px;
+        margin: 0;
+        padding: 0;
         background-color: #f5f5f5;
+      }
+      .layout {
+        display: flex;
+        min-height: 100vh;
+      }
+      .sidebar {
+        width: 180px;
+        background-color: #f0f0f0;
+        color: #333;
+        padding: 20px 0;
+        position: fixed;
+        height: 100vh;
+        overflow-y: auto;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+      }
+      .sidebar-title {
+        text-align: center;
+        font-size: 18px;
+        margin-bottom: 30px;
+        color: #ff2442;
+        padding: 0 15px;
+      }
+      .sidebar-menu {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      .sidebar-menu li {
+        padding: 15px 20px;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+      .sidebar-menu li:hover {
+        background-color: #e0e0e0;
+      }
+      .sidebar-menu li.active {
+        background-color: #ff2442;
+        font-weight: bold;
+        color: white;
+      }
+      .content {
+        flex: 1;
+        margin-left: 180px;
+        padding: 20px;
       }
       .container {
         max-width: 1200px;
@@ -99,44 +144,94 @@
       .link:hover {
         text-decoration: underline;
       }
-      #status {
+      #status,
+      #homepageStatus {
         text-align: center;
         margin: 20px 0;
         color: #666;
       }
+      .content-panel {
+        display: none;
+      }
+      .content-panel.active {
+        display: block;
+      }
     </style>
   </head>
   <body>
-    <div class="container">
-      <div class="header">
-        <h1>小红书数据查看器</h1>
-        <div class="buttons">
-          <button id="refreshData" class="button refresh-button">
-            刷新数据
-          </button>
-          <button id="exportData" class="button">导出CSV</button>
-          <button id="exportTXT" class="button">导出TXT</button>
-          <button id="clearData" class="button">清除数据</button>
+    <div class="layout">
+      <div class="sidebar">
+        <div class="sidebar-title">小红书数据查看器</div>
+        <ul class="sidebar-menu">
+          <li id="search-tab" class="active">搜索抓取</li>
+          <li id="homepage-tab">主页抓取</li>
+        </ul>
+      </div>
+      <div class="content">
+        <div id="search-panel" class="content-panel active">
+          <div class="container">
+            <div class="header">
+              <h1>搜索抓取数据</h1>
+              <div class="buttons">
+                <button id="refreshData" class="button refresh-button">
+                  刷新数据
+                </button>
+                <button id="exportData" class="button">导出CSV</button>
+                <button id="exportTXT" class="button">导出TXT</button>
+                <button id="clearData" class="button">清除数据</button>
+              </div>
+            </div>
+            <div id="status">加载中...</div>
+            <table id="dataTable">
+              <thead>
+                <tr>
+                  <th>标题</th>
+                  <th>链接</th>
+                  <th>类型</th>
+                  <th>作者</th>
+                  <th>昵称</th>
+                  <th>点赞数</th>
+                  <th>评论数</th>
+                  <th>分享数</th>
+                  <th>收藏数</th>
+                  <th>时间戳</th>
+                </tr>
+              </thead>
+              <tbody id="dataBody"></tbody>
+            </table>
+          </div>
+        </div>
+        <div id="homepage-panel" class="content-panel">
+          <div class="container">
+            <div class="header">
+              <h1>主页抓取数据</h1>
+              <div class="buttons">
+                <button id="refreshHomepageData" class="button refresh-button">
+                  刷新数据
+                </button>
+                <button id="exportHomepageData" class="button">导出CSV</button>
+                <button id="exportHomepageTXT" class="button">导出TXT</button>
+                <button id="clearHomepageData" class="button">清除数据</button>
+              </div>
+            </div>
+            <div id="homepageStatus">加载中...</div>
+            <table id="homepageTable">
+              <thead>
+                <tr>
+                  <th>标题</th>
+                  <th>链接</th>
+                  <th>类型</th>
+                  <th>作者</th>
+                  <th>昵称</th>
+                  <th>点赞数</th>
+                  <th>时间戳</th>
+                </tr>
+              </thead>
+              <tbody id="homepageBody"></tbody>
+            </table>
+          </div>
         </div>
       </div>
-      <div id="status">加载中...</div>
-      <table id="dataTable">
-        <thead>
-          <tr>
-            <th>标题</th>
-            <th>链接</th>
-            <th>类型</th>
-            <th>作者</th>
-            <th>昵称</th>
-            <th>点赞数</th>
-            <th>评论数</th>
-            <th>分享数</th>
-            <th>收藏数</th>
-            <th>时间戳</th>
-          </tr>
-        </thead>
-        <tbody id="dataBody"></tbody>
-      </table>
     </div>
     <script type="module" src="db.js"></script>
     <script type="module" src="data.js"></script>
