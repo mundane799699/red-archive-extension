@@ -40,11 +40,21 @@ const saveToIndexedDB = async (notesData) => {
 const saveDouyinToIndexedDB = async (items) => {
   for (const item of items) {
     const { type, aweme_info } = item;
-    const { author, aweme_id, author_user_id, aweme_type, desc, video } =
-      aweme_info;
+    const {
+      statistics,
+      author,
+      aweme_id,
+      author_user_id,
+      aweme_type,
+      desc,
+      video,
+    } = aweme_info;
+    const { digg_count, collect_count, share_count, comment_count } =
+      statistics;
     const { nickname, user_id, sec_uid } = author;
-    const { play_addr } = video;
-    const { url_list } = play_addr;
+    const { play_addr, play_addr_265 } = video;
+    const final_play_addr = play_addr_265 || play_addr;
+    const { url_list } = final_play_addr;
     const video_url = url_list[0];
     const douyin_url = `https://www.douyin.com/video/${aweme_id}`;
     const author_url = `https://www.douyin.com/user/${sec_uid}`;
@@ -56,6 +66,10 @@ const saveDouyinToIndexedDB = async (items) => {
       desc,
       author_url,
       aweme_type,
+      digg_count,
+      collect_count,
+      share_count,
+      comment_count,
       timestamp: Date.now(),
     });
   }

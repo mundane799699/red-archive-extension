@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <title>小红书数据查看器</title>
+    <title>小红书抖音数据查看器</title>
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -161,10 +161,11 @@
   <body>
     <div class="layout">
       <div class="sidebar">
-        <div class="sidebar-title">小红书数据查看器</div>
+        <div class="sidebar-title">小红书抖音数据查看器</div>
         <ul class="sidebar-menu">
-          <li id="search-tab" class="active">搜索抓取</li>
-          <li id="homepage-tab">主页抓取</li>
+          <li id="search-tab" class="active">小红书搜索</li>
+          <li id="homepage-tab">小红书主页</li>
+          <li id="douyin-search-tab">抖音搜索</li>
         </ul>
       </div>
       <div class="content">
@@ -228,6 +229,51 @@
                 </tr>
               </thead>
               <tbody id="homepageBody"></tbody>
+            </table>
+          </div>
+        </div>
+        <div id="douyin-search-panel" class="content-panel">
+          <div class="container">
+            <div class="header">
+              <h1>抖音搜索数据</h1>
+              <div class="buttons">
+                <button
+                  id="refreshDouyinSearchData"
+                  class="button refresh-button"
+                >
+                  刷新数据
+                </button>
+                <button id="exportDouyinSearchData" class="button">
+                  导出CSV
+                </button>
+                <button id="exportDouyinUrl" class="button">
+                  导出抖音链接
+                </button>
+                <button id="exportDouyinVideoUrl" class="button">
+                  导出视频链接
+                </button>
+                <button id="clearDouyinSearchData" class="button">
+                  清除数据
+                </button>
+              </div>
+            </div>
+            <div id="douyinSearchStatus">加载中...</div>
+            <table id="douyinSearchTable">
+              <thead>
+                <tr>
+                  <th>视频描述</th>
+                  <th>抖音链接</th>
+                  <th>作者昵称</th>
+                  <th>作者主页</th>
+                  <th>视频地址</th>
+                  <th>点赞数</th>
+                  <th>收藏数</th>
+                  <th>分享数</th>
+                  <th>评论数</th>
+                  <th>时间戳</th>
+                </tr>
+              </thead>
+              <tbody id="douyinSearchBody"></tbody>
             </table>
           </div>
         </div>
