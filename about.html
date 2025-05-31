@@ -156,10 +156,11 @@
   <body>
     <div class="layout">
       <div class="sidebar">
-        <div class="sidebar-title">小红书数据采集器</div>
+        <div class="sidebar-title">小红书抖音数据采集器</div>
         <ul class="sidebar-menu">
-          <li id="search-tab" class="active">搜索抓取</li>
-          <li id="homepage-tab">主页抓取</li>
+          <li id="search-tab" class="active">小红书搜索</li>
+          <li id="homepage-tab">小红书主页</li>
+          <li id="douyin-search-tab">抖音视频搜索</li>
         </ul>
         <div class="sidebar-footer">
           <div class="feedback-info">
@@ -178,7 +179,7 @@
       <div class="content">
         <div id="search-panel" class="content-panel active">
           <div class="container">
-            <h1>搜索抓取使用说明</h1>
+            <h1>小红书搜索抓取使用说明</h1>
 
             <h2>功能介绍</h2>
             <p>
@@ -246,7 +247,7 @@
         </div>
         <div id="homepage-panel" class="content-panel">
           <div class="container">
-            <h1>主页抓取使用说明</h1>
+            <h1>小红书主页抓取使用说明</h1>
 
             <h2>功能介绍</h2>
             <p>
@@ -305,6 +306,108 @@
                 <li>采集的数据仅用于个人学习研究</li>
                 <li>请尊重他人隐私，遵守相关法律法规</li>
                 <li>主页抓取功能目前仅获取笔记标题、类型和点赞数等有限信息</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div id="douyin-search-panel" class="content-panel">
+          <div class="container">
+            <h1>抖音视频搜索抓取使用说明</h1>
+
+            <h2>功能介绍</h2>
+            <p>
+              抖音搜索抓取功能可以帮助你采集抖音搜索结果页面的视频数据。采集的数据包括：视频描述、视频链接、作者信息、互动数据（点赞数、收藏数、分享数、评论数）等。
+            </p>
+
+            <h2>使用步骤</h2>
+
+            <div class="step">
+              <span class="step-number">1</span>
+              <strong>安装扩展</strong>
+              <p>将扩展安装到你的Chrome浏览器中。</p>
+            </div>
+
+            <div class="step">
+              <span class="step-number">2</span>
+              <strong>访问抖音网站，搜索视频</strong>
+              <p>
+                打开例如<a
+                  href="https://www.douyin.com/search/%E6%B1%9F%E5%8D%97?type=video"
+                  target="_blank"
+                  style="color: #ff2442; text-decoration: none"
+                  >江南</a
+                >，使用视频搜索功能输入你要查询的关键词，点击搜索。
+              </p>
+              <p>
+                <strong style="color: #ff2442; font-size: 1.1em"
+                  >注意：搜索时不要选综合，要选视频！</strong
+                >
+              </p>
+            </div>
+
+            <div class="step">
+              <span class="step-number">3</span>
+              <strong>开始采集</strong>
+              <p>
+                扩展会自动拦截抖音视频搜索API请求，获取视频数据并保存到扩展的本地数据库。向下滚动页面或翻页可以采集更多数据。
+              </p>
+            </div>
+
+            <div class="step">
+              <span class="step-number">4</span>
+              <strong>查看数据</strong>
+              <p>
+                点击扩展图标，选择"查看数据"按钮，在数据查看页面选择"抖音视频搜索"标签，可以查看已采集的抖音视频数据。
+              </p>
+            </div>
+
+            <div class="step">
+              <span class="step-number">5</span>
+              <strong>数据排序</strong>
+              <p>在抖音搜索数据页面，你可以点击表头进行排序：</p>
+              <ul>
+                <li>点击"点赞数"可以按点赞数排序</li>
+                <li>点击"收藏数"可以按收藏数排序</li>
+                <li>点击"分享数"可以按分享数排序</li>
+                <li>点击"评论数"可以按评论数排序</li>
+                <li>点击"时间戳"可以按采集时间排序</li>
+              </ul>
+            </div>
+
+            <div class="step">
+              <span class="step-number">6</span>
+              <strong>导出数据</strong>
+              <p>在抖音搜索数据页面，你可以：</p>
+              <ul>
+                <li>导出为CSV文件（包含完整数据，包括统计信息）</li>
+                <li>导出抖音链接（仅包含视频在抖音平台的链接）</li>
+                <li>导出视频链接（仅包含视频的直播放地址）</li>
+                <li>清除已采集的数据</li>
+              </ul>
+            </div>
+
+            <div class="note">
+              <strong>采集数据说明：</strong>
+              <ul>
+                <li><strong>视频描述：</strong>视频的标题或描述文字</li>
+                <li><strong>抖音链接：</strong>在抖音平台上的视频页面链接</li>
+                <li><strong>作者昵称：</strong>视频发布者的昵称</li>
+                <li><strong>作者主页：</strong>视频发布者的个人主页链接</li>
+                <li><strong>视频地址：</strong>视频的实际播放地址</li>
+                <li>
+                  <strong>互动数据：</strong>点赞数、收藏数、分享数、评论数
+                </li>
+              </ul>
+            </div>
+
+            <div class="note">
+              <strong>注意事项：</strong>
+              <ul>
+                <li>请合理使用，不要频繁采集数据</li>
+                <li>采集的数据仅用于个人学习研究</li>
+                <li>请遵守抖音的使用条款和相关法律法规</li>
+                <li>视频地址可能有时效性限制，请及时使用</li>
+                <li>互动数据（点赞、收藏等）为采集时的实时数据</li>
               </ul>
             </div>
           </div>

@@ -20,6 +20,8 @@ const switchTab = (tabId) => {
     document.getElementById("search-panel").classList.add("active");
   } else if (tabId === "homepage-tab") {
     document.getElementById("homepage-panel").classList.add("active");
+  } else if (tabId === "douyin-search-tab") {
+    document.getElementById("douyin-search-panel").classList.add("active");
   }
 };
 
@@ -42,4 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document
     .getElementById("homepage-tab")
     .addEventListener("click", () => switchTab("homepage-tab"));
+  document
+    .getElementById("douyin-search-tab")
+    .addEventListener("click", () => switchTab("douyin-search-tab"));
 });
