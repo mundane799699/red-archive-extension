@@ -1,7 +1,7 @@
 // 初始化IndexedDB
 const initDB = () => {
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open("XHSData", 1);
+    const request = indexedDB.open("XHSData", 2);
     request.onerror = () => reject(request.error);
     request.onsuccess = () => resolve(request.result);
     request.onupgradeneeded = (event) => {
@@ -14,6 +14,18 @@ const initDB = () => {
       }
       if (!db.objectStoreNames.contains("homepageResults")) {
         const store = db.createObjectStore("homepageResults", {
+          keyPath: "id",
+        });
+        store.createIndex("timestamp", "timestamp", { unique: false });
+      }
+      if (!db.objectStoreNames.contains("douyinSearchResults")) {
+        const store = db.createObjectStore("douyinSearchResults", {
+          keyPath: "id",
+        });
+        store.createIndex("timestamp", "timestamp", { unique: false });
+      }
+      if (!db.objectStoreNames.contains("douyinHomepageResults")) {
+        const store = db.createObjectStore("douyinHomepageResults", {
           keyPath: "id",
         });
         store.createIndex("timestamp", "timestamp", { unique: false });
@@ -94,6 +106,84 @@ export const saveHomepageData = async (data) => {
     const transaction = db.transaction(["homepageResults"], "readwrite");
     const store = transaction.objectStore("homepageResults");
     const request = store.put(data);
+
+    request.onsuccess = () => resolve();
+    request.onerror = () => reject(request.error);
+  });
+};
+
+// 获取所有抖音搜索数据
+export const getAllDouyinSearchData = async () => {
+  const db = await initDB();
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(["douyinSearchResults"], "readonly");
+    const store = transaction.objectStore("douyinSearchResults");
+    const request = store.getAll();
+
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+};
+
+// 获取所有抖音主页数据
+export const getAllDouyinHomepageData = async () => {
+  const db = await initDB();
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(["douyinHomepageResults"], "readonly");
+    const store = transaction.objectStore("douyinHomepageResults");
+    const request = store.getAll();
+
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+};
+
+// 保存抖音搜索数据
+export const saveDouyinSearchData = async (data) => {
+  const db = await initDB();
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(["douyinSearchResults"], "readwrite");
+    const store = transaction.objectStore("douyinSearchResults");
+    const request = store.put(data);
+
+    request.onsuccess = () => resolve();
+    request.onerror = () => reject(request.error);
+  });
+};
+
+// 保存抖音主页数据
+export const saveDouyinHomepageData = async (data) => {
+  const db = await initDB();
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(["douyinHomepageResults"], "readwrite");
+    const store = transaction.objectStore("douyinHomepageResults");
+    const request = store.put(data);
+
+    request.onsuccess = () => resolve();
+    request.onerror = () => reject(request.error);
+  });
+};
+
+// 清除所有抖音搜索数据
+export const clearAllDouyinSearchData = async () => {
+  const db = await initDB();
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(["douyinSearchResults"], "readwrite");
+    const store = transaction.objectStore("douyinSearchResults");
+    const request = store.clear();
+
+    request.onsuccess = () => resolve();
+    request.onerror = () => reject(request.error);
+  });
+};
+
+// 清除所有抖音主页数据
+export const clearAllDouyinHomepageData = async () => {
+  const db = await initDB();
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(["douyinHomepageResults"], "readwrite");
+    const store = transaction.objectStore("douyinHomepageResults");
+    const request = store.clear();
 
     request.onsuccess = () => resolve();
     request.onerror = () => reject(request.error);

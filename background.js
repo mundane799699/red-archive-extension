@@ -1,4 +1,4 @@
-import { saveData, saveHomepageData } from "./db.js";
+import { saveData, saveHomepageData, saveDouyinSearchData } from "./db.js";
 
 // 监听扩展安装事件
 chrome.runtime.onInstalled.addListener((details) => {
@@ -8,7 +8,7 @@ chrome.runtime.onInstalled.addListener((details) => {
   }
 });
 
-// 保存搜索数据到IndexedDB
+// 保存小红书搜索数据到IndexedDB
 const saveToIndexedDB = async (notesData) => {
   const { items } = notesData;
   for (const item of items) {
@@ -33,7 +33,33 @@ const saveToIndexedDB = async (notesData) => {
       });
     }
   }
-  console.log("搜索数据已保存到IndexedDB");
+  console.log("小红书搜索数据已保存到IndexedDB");
+};
+
+// 保存抖音搜索数据到IndexedDB
+const saveDouyinToIndexedDB = async (items) => {
+  for (const item of items) {
+    const { type, aweme_info } = item;
+    const { author, aweme_id, author_user_id, aweme_type, desc, video } =
+      aweme_info;
+    const { nickname, user_id, sec_uid } = author;
+    const { play_addr } = video;
+    const { url_list } = play_addr;
+    const video_url = url_list[0];
+    const douyin_url = `https://www.douyin.com/video/${aweme_id}`;
+    const author_url = `https://www.douyin.com/user/${sec_uid}`;
+    await saveDouyinSearchData({
+      id: aweme_id,
+      nickname,
+      video_url,
+      douyin_url,
+      desc,
+      author_url,
+      aweme_type,
+      timestamp: Date.now(),
+    });
+  }
+  console.log("抖音搜索数据已保存到IndexedDB");
 };
 
 // 保存主页数据到IndexedDB
@@ -75,10 +101,10 @@ const saveHomepageToIndexedDB = async (notesData) => {
 
 // 监听来自content script的消息
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.type === "SEARCH_RESULT") {
+  if (message.dataType === "search" && message.platform === "xiaohongshu") {
     try {
       const responseData = JSON.parse(message.responseText);
-      console.log("background.js收到搜索消息:", responseData);
+      console.log("background收到xhs search", responseData);
       const { code, data: notesData } = responseData;
       if (code === 0) {
         saveToIndexedDB(notesData);
@@ -91,10 +117,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return true;
   }
 
-  if (message.type === "HOMEPAGE_RESULT") {
+  if (message.dataType === "homepage" && message.platform === "xiaohongshu") {
     try {
       const responseData = JSON.parse(message.responseText);
-      console.log("background.js收到主页消息:", responseData);
+      console.log("background收到xhs homepage", responseData);
       const { code, data: notesData } = responseData;
       if (code === 0) {
         saveHomepageToIndexedDB(notesData);
@@ -102,6 +128,21 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       }
     } catch (error) {
       console.error("解析主页响应数据失败:", error);
+      sendResponse({ success: false });
+    }
+    return true;
+  }
+  if (message.dataType === "search" && message.platform === "douyin") {
+    try {
+      const responseData = JSON.parse(message.responseText);
+      console.log("background收到douyin search", responseData);
+      const { status_code, data } = responseData;
+      if (status_code === 0) {
+        saveDouyinToIndexedDB(data);
+        sendResponse({ success: true });
+      }
+    } catch (error) {
+      console.error("解析搜索响应数据失败:", error);
       sendResponse({ success: false });
     }
     return true;

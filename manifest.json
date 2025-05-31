@@ -1,17 +1,17 @@
 {
   "manifest_version": 3,
-  "name": "RedArchive - 小红书数据采集器",
+  "name": "RedArchive - 小红书、抖音数据采集器",
   "version": "1.2.0",
-  "description": "拦截并保存小红书搜索数据",
+  "description": "拦截并保存小红书、抖音搜索和用户主页数据",
   "permissions": ["storage", "downloads"],
-  "host_permissions": ["*://*.xiaohongshu.com/*"],
+  "host_permissions": ["*://*.xiaohongshu.com/*", "*://*.douyin.com/*"],
   "background": {
     "service_worker": "background.js",
     "type": "module"
   },
   "content_scripts": [
     {
-      "matches": ["*://*.xiaohongshu.com/*"],
+      "matches": ["*://*.xiaohongshu.com/*", "*://*.douyin.com/*"],
       "js": ["content.js"],
       "run_at": "document_start",
       "all_frames": true
@@ -19,8 +19,12 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["scripts/pageInjectScript.js", "db.js"],
-      "matches": ["*://*.xiaohongshu.com/*"]
+      "resources": [
+        "scripts/xhsPageInjectScript.js",
+        "scripts/douyinPageInjectScript.js",
+        "db.js"
+      ],
+      "matches": ["*://*.xiaohongshu.com/*", "*://*.douyin.com/*"]
     }
   ],
   "action": {

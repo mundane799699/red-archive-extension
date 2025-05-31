@@ -73,6 +73,7 @@ function extractFirstPageData() {
             {
               type: "FROM_INJECTED",
               dataType: "homepage",
+              platform: "xiaohongshu",
               payload: {
                 url: window.location.href,
                 responseText: JSON.stringify(response),
@@ -114,6 +115,7 @@ function intercept_ajax() {
           {
             type: "FROM_INJECTED",
             dataType: "search",
+            platform: "xiaohongshu",
             payload: {
               url: url,
               responseText: event.target.responseText,
@@ -135,6 +137,7 @@ function intercept_ajax() {
           {
             type: "FROM_INJECTED",
             dataType: "homepage",
+            platform: "xiaohongshu",
             payload: {
               url: url,
               responseText: event.target.responseText,
